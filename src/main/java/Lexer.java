@@ -27,6 +27,9 @@ public class Lexer {
         }
 
         processSymbol('\n');
+        if (currentState != State.START) {
+            createToken(Token.ERROR);
+        }
 
         return tokens;
     }
@@ -54,6 +57,8 @@ public class Lexer {
             case SINGLE_LINE_COMMENT -> singleLineCommentState(c);
             case BLOCK_COMMENT -> blockCommentState(c);
             case PERIOD_IN_DIGIT -> periodInDigitState(c);
+            case FLOAT -> floatState(c);
+            case INVALID_NUMBER -> invalidFloatState(c);
             case CHAR_PROCESSING -> charProcessingState(c);
             case SH -> shState(c);
             case OPERATOR_AND_EQUAL -> operatorAndEqualState(c);
@@ -147,6 +152,8 @@ public class Lexer {
             }
             currentState = State.START;
             startState(c);
+        } else if (!(Character.isLetter(c) || Character.isDigit(c) || c == '_')) {
+            currentState = State.ERROR;
         }
     }
 
@@ -200,10 +207,10 @@ public class Lexer {
     }
 
     private void periodInDigitState(Character c) {
-        if (!Character.isDigit(c)) {
-            addCompleteToken(Token.FLOAT);
-            currentState = State.START;
-            startState(c);
+        if (Character.isDigit(c)) {
+            currentState = State.FLOAT;
+        } else {
+            currentState = State.ERROR;
         }
     }
 
@@ -214,7 +221,7 @@ public class Lexer {
     }
 
     private void singleLineCommentState(Character c) {
-        if (Character.isWhitespace(c) || c == '\n') {
+        if (c == '\n') {
             addCompleteToken(Token.COMMENT);
             currentState = State.START;
             startState(c);
@@ -358,7 +365,30 @@ public class Lexer {
         if (c == '.') {
             currentState = State.PERIOD_IN_DIGIT;
         } else if (!Character.isDigit(c))  {
-            addCompleteToken(Token.INT);
+            if (Character.isWhitespace(c) || c == '\n') {
+                addCompleteToken(Token.INT);
+                currentState = State.START;
+                startState(c);
+            } else if (!Character.isDigit(c)) {
+                currentState = State.INVALID_NUMBER;
+            }
+        }
+    }
+
+    private void floatState(Character c) {
+        if (Character.isWhitespace(c) || c == '\n') {
+            addCompleteToken(Token.FLOAT);
+            currentState = State.START;
+            startState(c);
+        } else if (!Character.isDigit(c)) {
+            currentState = State.INVALID_NUMBER;
+        }
+    }
+
+
+    private void invalidFloatState(Character c) {
+        if (Character.isWhitespace(c) || c == '\n') {
+            addCompleteToken(Token.ERROR);
             currentState = State.START;
             startState(c);
         }
@@ -376,8 +406,12 @@ public class Lexer {
 
     private void stringState(Character c) {
         if (c == '\"') {
-            createToken(Token.STRING);
-            currentState = State.START;
+            if (stateBuffer.charAt(stateBuffer.length() - 2) != '\\') {
+                createToken(Token.STRING);
+                currentState = State.START;
+            } else {
+                stateBuffer.deleteCharAt(stateBuffer.length() - 2);
+            }
         }
     }
 
