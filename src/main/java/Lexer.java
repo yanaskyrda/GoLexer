@@ -368,7 +368,7 @@ public class Lexer {
         } else if (c == 'i') {
             currentState = State.COMPLEX_NUMBER;
         } else if (!Character.isDigit(c)) {
-            if (Character.isWhitespace(c) || c == '\n') {
+            if (Character.isWhitespace(c) || c == '\n' || Utils.isSeparator(c)) {
                 addCompleteToken(Token.INT);
                 currentState = State.START;
                 startState(c);
@@ -379,7 +379,7 @@ public class Lexer {
     }
 
     private void floatState(Character c) {
-        if (Character.isWhitespace(c) || c == '\n') {
+        if (Character.isWhitespace(c) || c == '\n' || Utils.isSeparator(c)) {
             addCompleteToken(Token.FLOAT);
             currentState = State.START;
             startState(c);
@@ -391,7 +391,7 @@ public class Lexer {
     }
 
     private void complexState(Character c) {
-        if (Character.isWhitespace(c) || c == '\n') {
+        if (Character.isWhitespace(c) || c == '\n' || Utils.isSeparator(c)) {
             addCompleteToken(Token.COMPLEX);
             currentState = State.START;
             startState(c);
