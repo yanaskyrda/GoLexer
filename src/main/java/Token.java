@@ -6,6 +6,7 @@ public enum Token {
     SEPARATOR,
     INT,
     FLOAT,
+    COMPLEX,
     CHAR,
     STRING,
     BOOLEAN,

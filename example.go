@@ -103,7 +103,6 @@ func main() {
 	go smoker3.tryToSmoke(partsChan, smokerSemaphore, moderatorSemaphore)
 	<-endChan
 }
-
 "hello \" world"
 2.3.5
 23fghjk
@@ -114,5 +113,10 @@ sometextdtttgg
 ghjfg   DFNGDK .54,56.23,45.WE,SMFV;O``134545068895////
 */
 /*
-waerty
+waerty*/
 
+2.3000000000i
+15i
+
+
+\""

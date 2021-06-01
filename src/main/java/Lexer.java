@@ -58,6 +58,7 @@ public class Lexer {
             case BLOCK_COMMENT -> blockCommentState(c);
             case PERIOD_IN_DIGIT -> periodInDigitState(c);
             case FLOAT -> floatState(c);
+            case COMPLEX_NUMBER -> complexState(c);
             case INVALID_NUMBER -> invalidFloatState(c);
             case CHAR_PROCESSING -> charProcessingState(c);
             case SH -> shState(c);
@@ -92,7 +93,7 @@ public class Lexer {
     }
 
     private void startState(Character c) {
-       if (c == '/') {
+        if (c == '/') {
             currentState = State.QUO;
         } else if (Character.isWhitespace(c) || c == '\n') {
             createToken(Token.WHITESPACE);
@@ -364,7 +365,9 @@ public class Lexer {
     private void digitState(Character c) {
         if (c == '.') {
             currentState = State.PERIOD_IN_DIGIT;
-        } else if (!Character.isDigit(c))  {
+        } else if (c == 'i') {
+            currentState = State.COMPLEX_NUMBER;
+        } else if (!Character.isDigit(c)) {
             if (Character.isWhitespace(c) || c == '\n') {
                 addCompleteToken(Token.INT);
                 currentState = State.START;
@@ -380,7 +383,19 @@ public class Lexer {
             addCompleteToken(Token.FLOAT);
             currentState = State.START;
             startState(c);
+        } else if (c == 'i') {
+            currentState = State.COMPLEX_NUMBER;
         } else if (!Character.isDigit(c)) {
+            currentState = State.INVALID_NUMBER;
+        }
+    }
+
+    private void complexState(Character c) {
+        if (Character.isWhitespace(c) || c == '\n') {
+            addCompleteToken(Token.COMPLEX);
+            currentState = State.START;
+            startState(c);
+        } else {
             currentState = State.INVALID_NUMBER;
         }
     }

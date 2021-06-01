@@ -18,6 +18,7 @@ public enum State {
     BLOCK_COMMENT,
     DIGIT,
     FLOAT,
+    COMPLEX_NUMBER,
     INVALID_NUMBER,
     PERIOD_IN_DIGIT,
     CHAR_PROCESSING,
