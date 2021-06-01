@@ -128,8 +128,8 @@ public class Lexer {
         } else if (Character.isAlphabetic(c) || c == '_') {
             currentState = State.TEXT_PROCESSING;
         } else {
+            currentState = State.ERROR;
            log.warn("Can't find state for symbols {}", stateBuffer.toString());
-           stateBuffer = new StringBuilder();
        }
     }
 
